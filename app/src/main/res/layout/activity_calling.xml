@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.CallingActivity">
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ImageView
+        android:id="@+id/end_call"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:src="@drawable/btn_endcall_normal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.94" />
+
+    <ImageView
+        android:id="@+id/audioBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="25dp"
+        android:src="@drawable/btn_unmute_normal"
+        app:layout_constraintBottom_toBottomOf="@+id/end_call"
+        app:layout_constraintEnd_toStartOf="@+id/end_call"
+        app:layout_constraintTop_toTopOf="@+id/end_call" />
+
+    <ImageView
+        android:id="@+id/videoBtn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="25dp"
+        android:src="@drawable/btn_video_normal"
+        app:layout_constraintBottom_toBottomOf="@+id/end_call"
+        app:layout_constraintStart_toEndOf="@+id/end_call"
+        app:layout_constraintTop_toTopOf="@+id/end_call" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/crontrols"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="videoBtn,audioBtn,end_call" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

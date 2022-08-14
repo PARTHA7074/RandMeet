@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "784578782589",
+    "project_id": "video-call-7b6d8",
+    "storage_bucket": "video-call-7b6d8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784578782589:android:d660e4e2c9e7de7115d814",
+        "android_client_info": {
+          "package_name": "com.panjacreation.videocall"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784578782589-mq62mit5vep4mcrhbd5qtk0evnp2vui7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWzDWIxlHxT6iU_6rl_dWrlSBMn1fs3D0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784578782589-mq62mit5vep4mcrhbd5qtk0evnp2vui7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
