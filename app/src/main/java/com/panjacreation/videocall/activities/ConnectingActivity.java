@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -67,7 +68,6 @@ public class ConnectingActivity extends AppCompatActivity {
                                 intent.putExtra("createdBy",createdBy);
                                 intent.putExtra("isAvailable",isAvailable);
                                 startActivity(intent);
-                                finish();
                             }
                         }
                         else{
@@ -99,7 +99,6 @@ public class ConnectingActivity extends AppCompatActivity {
                                                                     intent.putExtra("createdBy",createdBy);
                                                                     intent.putExtra("isAvailable",isAvailable);
                                                                     startActivity(intent);
-                                                                    finish();
                                                                 }
                                                             }
                                                         }
@@ -121,12 +120,12 @@ public class ConnectingActivity extends AppCompatActivity {
                 });
     }
 
-    /*@Override
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         database.getReference().child("users").child(userName).setValue(null);
         finish();
-    }*/
+    }
 
     @Override
     public void onBackPressed() {
@@ -135,5 +134,10 @@ public class ConnectingActivity extends AppCompatActivity {
         finish();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        database.getReference().child("users").child(userName).child("status").setValue(1);
+    }
 
 }

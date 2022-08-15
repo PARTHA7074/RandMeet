@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.Group;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -72,7 +73,7 @@ public class CallingActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (!snapshot.exists()){
-                    finish();
+                    goToMainActivity();
                 }
             }
 
@@ -120,7 +121,7 @@ public class CallingActivity extends AppCompatActivity {
         endCallBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                goToMainActivity();
             }
         });
 
@@ -242,6 +243,17 @@ public class CallingActivity extends AppCompatActivity {
         firebaseRef.child(createdBy).setValue(null);
         webView.loadUrl("file:///android_asset/nonexistent.html");
         finish();
+    }
+
+    void goToMainActivity(){
+        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+        finishAffinity();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        goToMainActivity();
     }
 
 }
