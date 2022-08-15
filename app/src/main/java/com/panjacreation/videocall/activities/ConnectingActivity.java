@@ -85,6 +85,7 @@ public class ConnectingActivity extends AppCompatActivity {
                                 intent.putExtra("createdBy",createdBy);
                                 intent.putExtra("isAvailable",isAvailable);
                                 startActivity(intent);
+                                finish();
                             }
                         }
                         else{
@@ -117,6 +118,7 @@ public class ConnectingActivity extends AppCompatActivity {
                                                                     intent.putExtra("createdBy",createdBy);
                                                                     intent.putExtra("isAvailable",isAvailable);
                                                                     startActivity(intent);
+                                                                    finish();
                                                                 }
                                                             }
                                                         }
@@ -141,7 +143,6 @@ public class ConnectingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        database.getReference().child("users").child(userName).setValue(null);
         destroyed = true;
     }
 
@@ -153,6 +154,7 @@ public class ConnectingActivity extends AppCompatActivity {
         } else {
             Log.d("TAG", "The interstitial ad wasn't ready yet.");
             destroyed = true;
+            database.getReference().child("users").child(userName).setValue(null);
             finish();
         }
     }
@@ -161,6 +163,7 @@ public class ConnectingActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         if (!destroyed && !nextActivity) {
+            database.getReference().child("users").child(userName).setValue(null);
             finish();
         }
     }
@@ -209,6 +212,7 @@ public class ConnectingActivity extends AppCompatActivity {
                             public void onAdShowedFullScreenContent() {
                                 // Called when ad is shown.
                                 Log.d(TAG, "Ad showed fullscreen content.");
+                                database.getReference().child("users").child(userName).setValue(null);
                             }
                         });
                     }

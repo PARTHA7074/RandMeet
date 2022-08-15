@@ -92,7 +92,7 @@ public class CallingActivity extends AppCompatActivity {
                                 mInterstitialAd.show(CallingActivity.this);
                             } else {
                                 Log.d("TAG", "The interstitial ad wasn't ready yet.");
-                                goToMainActivity();
+                                finish();
                             }
                         }
                     }
@@ -147,12 +147,11 @@ public class CallingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 selfEnd = true;
-                firebaseRef.child(createdBy).setValue(null);
                 if (mInterstitialAd != null) {
                     mInterstitialAd.show(CallingActivity.this);
                 } else {
                     Log.d("TAG", "The interstitial ad wasn't ready yet.");
-                    goToMainActivity();
+                    finish();
                 }
             }
         });
@@ -271,21 +270,22 @@ public class CallingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        Toast.makeText(this, "Call ended", Toast.LENGTH_SHORT).show();
         pageExit = true;
         firebaseRef.child(createdBy).setValue(null);
         webView.loadUrl("file:///android_asset/nonexistent.html");
-        finishAffinity();
     }
 
-    void goToMainActivity(){
-        startActivity(new Intent(getApplicationContext(),MainActivity.class));
-        finishAffinity();
-    }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        goToMainActivity();
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(CallingActivity.this);
+        } else {
+            Log.d("TAG", "The interstitial ad wasn't ready yet.");
+            finish();
+        }
     }
 
     private void loadAdd(){
@@ -311,7 +311,6 @@ public class CallingActivity extends AppCompatActivity {
                                 // Set the ad reference to null so you don't show the ad a second time.
                                 Log.d(TAG, "Ad dismissed fullscreen content.");
                                 mInterstitialAd = null;
-                                goToMainActivity();
                             }
 
                             @Override
@@ -319,6 +318,7 @@ public class CallingActivity extends AppCompatActivity {
                                 // Called when ad fails to show.
                                 Log.e(TAG, "Ad failed to show fullscreen content.");
                                 mInterstitialAd = null;
+                                finish();
                             }
 
                             @Override
@@ -331,7 +331,7 @@ public class CallingActivity extends AppCompatActivity {
                             public void onAdShowedFullScreenContent() {
                                 // Called when ad is shown.
                                 Log.d(TAG, "Ad showed fullscreen content.");
-                                webView.loadUrl("file:///android_asset/nonexistent.html");
+                                finish();
                             }
                         });
                     }
