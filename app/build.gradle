@@ -10,8 +10,8 @@ android {
         applicationId "com.panjacreation.videocall"
         minSdk 23
         targetSdk 32
-        versionCode 3
-        versionName "1.1"
+        versionCode 4
+        versionName "1.2"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -48,4 +48,6 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.13.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
     implementation 'com.karumi:dexter:6.2.3'
+
+    implementation 'com.google.android.gms:play-services-ads:21.1.0'
 }
