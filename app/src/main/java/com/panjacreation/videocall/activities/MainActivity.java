@@ -3,12 +3,14 @@ package com.panjacreation.videocall.activities;
 import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatEditText;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +31,17 @@ import com.google.android.gms.ads.interstitial.InterstitialAd;
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.review.ReviewInfo;
+import com.google.android.play.core.review.ReviewManager;
+import com.google.android.play.core.review.ReviewManagerFactory;
 import com.karumi.dexter.Dexter;
 import com.karumi.dexter.MultiplePermissionsReport;
 import com.karumi.dexter.PermissionToken;
@@ -47,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     CircleImageView profileImg;
     TextView profileName;
     private AdView bannerAdView;
+    InstallStateUpdatedListener listener;
+    AppUpdateManager appUpdateManager;
+    public static final int IN_APP_UPDATE_REQUEST_CODE = 109;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         loadAdd();
+        inAppReview();
+        inAppUpdate();
 
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 
@@ -159,4 +177,102 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).check();
     }
+
+    private void inAppReview(){
+        ReviewManager manager = ReviewManagerFactory.create(this);
+        Task<ReviewInfo> request = manager.requestReviewFlow();
+        request.addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                ReviewInfo reviewInfo = task.getResult();
+                Task<Void> flow = manager.launchReviewFlow(MainActivity.this, reviewInfo);
+                flow.addOnCompleteListener(taskFlow -> {
+                    // The flow has finished. The API does not indicate whether the user
+                    // reviewed or not, or even whether the review dialog was shown. Thus, no
+                    // matter the result, we continue our app flow.
+                });
+            } else {
+                // There was some problem, log or handle the error code.
+                Log.e(TAG, "inAppReview: "+task.getException());
+
+            }
+        });
+    }
+
+    private void inAppUpdate(){
+
+        appUpdateManager = AppUpdateManagerFactory.create(getApplicationContext());
+
+        listener = state -> {
+            // (Optional) Provide a download progress bar.
+            if (state.installStatus() == InstallStatus.DOWNLOADING) {
+                long bytesDownloaded = state.bytesDownloaded();
+                long totalBytesToDownload = state.totalBytesToDownload();
+                // Implement progress bar.
+            }
+            if (state.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackbarForCompleteUpdate();
+            }
+
+
+            // Log state or install the update.
+        };
+
+        appUpdateManager.getAppUpdateInfo().addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+
+                appUpdateManager.registerListener(listener);
+
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            appUpdateInfo,
+                            AppUpdateType.FLEXIBLE,
+                            this,
+                            // Include a request code to later monitor this update request.
+                            IN_APP_UPDATE_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                popupSnackbarForCompleteUpdate();
+            }
+        });
+    }
+
+    private void popupSnackbarForCompleteUpdate() {
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(R.id.activity_main_layout),
+                        "An update has just been downloaded.",
+                        Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("RESTART", view -> appUpdateManager.completeUpdate());
+        snackbar.setActionTextColor(
+                getResources().getColor(R.color.purple_200));
+        snackbar.show();
+    }
+
+    public void onActivityResultInAppUpdate(int requestCode, int resultCode, Intent data) {
+        if (requestCode == IN_APP_UPDATE_REQUEST_CODE) {
+            if (resultCode != RESULT_OK) {
+                // If the update is cancelled or fails,
+                // you can request to start the update again.
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        onActivityResultInAppUpdate(requestCode,resultCode,data);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        appUpdateManager.unregisterListener(listener);
+    }
+
+
 }
